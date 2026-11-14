@@ -1,0 +1,1139 @@
+:root {
+      --neon-pink: #ff00ff;
+      --neon-cyan: #00ffff;
+      --cyber-bg: #0a0a0a;
+      --cyber-primary: #f0f;
+      --cyber-secondary: #0ff;
+      --dark-bg: #0d1117;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background-color: var(--dark-bg);
+      background-image: radial-gradient(circle at 50% 10%, #161c28 0%, #0d1117 60%, #07090d 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: #eee;
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    .cyberpunk-font {
+        font-family: 'VT323', monospace;
+    }
+
+    h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+
+    .neon-text {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan);
+    }
+
+    /* --- 1. CUSTOM SCROLLBAR --- */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0a0a0a;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(var(--cyber-secondary), var(--cyber-primary));
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--neon-pink);
+    }
+
+    /* --- 3. CURSOR TRAIL EFFECT (DISABLED FOR PEAK SMOOTHNESS) --- */
+    .cursor-trail {
+        display: none !important;
+    }
+
+    /* --- 4. NAVIGATION EFFECTS --- */
+    .nav-link.active {
+        color: var(--neon-cyan);
+    }
+    .nav-link.active span {
+        box-shadow: 0 0 10px var(--neon-cyan);
+    }
+    .nav-link:hover {
+        text-shadow: 0 0 8px currentColor;
+    }
+
+    /* SPIN ANIMATION UTILITY */
+    .animate-spin-slow {
+        animation: spin 4s linear infinite;
+    }
+
+    /* --- 5. GLITCH IMAGE HOVER --- */
+    .img-glitch-hover {
+        transition: all 0.3s ease-out;
+        transform: scale(1);
+        filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+    }
+    .profile-card-container:hover .img-glitch-hover {
+        transform: scale(1.05);
+        filter: drop-shadow(-4px -4px 0px rgba(255, 0, 255, 0.6)) drop-shadow(4px 4px 0px rgba(0, 255, 255, 0.6));
+    }
+
+    /* --- 6. BACKGROUND PARTICLES CANVAS (DISABLED - REPLACED BY CLEAN CSS GRADIENT) --- */
+    #particles-canvas {
+        display: none !important;
+    }
+
+    /* --- 7. BACK TO TOP BUTTON --- */
+    #back-to-top {
+        position: fixed; bottom: 30px; right: 30px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        width: 50px; height: 50px;
+        border-radius: 50%;
+        display: flex; justify-content: center; align-items: center;
+        cursor: pointer; opacity: 0; visibility: hidden;
+        transition: all 0.3s ease; z-index: 50;
+        box-shadow: 0 0 10px var(--neon-cyan);
+    }
+    #back-to-top:hover {
+        background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px var(--neon-cyan);
+    }
+    #back-to-top.show { opacity: 1; visibility: visible; }
+
+    /* --- 8. TOAST NOTIFICATION --- */
+    #toast {
+        visibility: hidden;
+        min-width: 250px;
+        background-color: rgba(0, 0, 0, 0.9);
+        border: 1px solid var(--neon-pink);
+        color: #fff;
+        text-align: center;
+        border-radius: 4px;
+        padding: 16px;
+        position: fixed;
+        z-index: 100;
+        left: 50%;
+        bottom: 30px;
+        transform: translateX(-50%);
+        box-shadow: 0 0 15px var(--neon-pink);
+        font-family: 'Orbitron', sans-serif;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+    #toast.show {
+        visibility: visible;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+    @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+    /* --- 9. RECRUITMENT WIDGET (BLINKING) --- */
+    .status-indicator {
+        display: inline-block;
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        background-color: #00ff00;
+        margin-right: 8px;
+        box-shadow: 0 0 10px #00ff00;
+        animation: blink-status 1.5s infinite;
+    }
+    @keyframes blink-status {
+        0% { opacity: 1; box-shadow: 0 0 5px #00ff00; }
+        50% { opacity: 0.3; box-shadow: 0 0 0 #00ff00; }
+        100% { opacity: 1; box-shadow: 0 0 5px #00ff00; }
+    }
+
+    /* --- 10. SCROLL REVEAL ANIMATION CLASS --- */
+    .reveal-card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        will-change: opacity, transform;
+    }
+    .reveal-card.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* --- HERO IMAGE ANIMATION --- */
+    .hero-image-wrapper {
+      perspective: 1000px;
+    }
+    .hero-image-anim {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+      animation: heroImageEnter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+    @keyframes heroImageEnter {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* --- 11. AR BUTTON STYLE --- */
+    .ar-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-family: 'Orbitron', sans-serif;
+        cursor: pointer;
+        z-index: 20;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .ar-btn:hover {
+        background: var(--neon-cyan);
+        color: #000;
+        box-shadow: 0 0 15px var(--neon-cyan);
+        transform: scale(1.05);
+    }
+
+    /* --- AUGMENTED UI & LAYOUT --- */
+    .cyber-aug-configuration {
+      --aug-tr: 15px; --aug-bl: 15px; --aug-br: 15px; --aug-tl: 15px;
+      --aug-border-all: 1px; --aug-border-bg: rgba(0, 255, 255, 0.3);
+      --aug-inlay-all: 0px; --aug-inlay-opacity: 0.98;
+    }
+
+    #qrcode {
+        background: white;
+        margin: 0 auto;
+    }
+    #qrcode img, #qrcode canvas { width: 100% !important; height: 100% !important; }
+
+    .marquee-container {
+        width: 100%; background-color: rgba(255, 0, 0, 0.2); color: #ff4444; overflow: hidden;
+        white-space: nowrap; box-shadow: 0 2px 10px rgba(255, 0, 0, 0.2);
+        border-top: 1px solid rgba(255, 0, 0, 0.3); border-bottom: 1px solid rgba(255, 0, 0, 0.3);
+        position: relative; z-index: 10;
+        backdrop-filter: blur(4px);
+    }
+    .marquee-text {
+        display: inline-block; padding: 6px 0; font-family: 'Orbitron', sans-serif;
+        font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;
+        animation: marquee-scroll 25s linear infinite;
+    }
+    @keyframes marquee-scroll { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+    /* CARD STYLES */
+    .profile-card-container {
+      perspective: 1000px;
+      height: 450px;
+      position: relative;
+      contain: layout style;
+      content-visibility: auto;
+      contain-intrinsic-size: 450px;
+    }
+    .profile-card-inner {
+      position: absolute; inset: 0; transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .profile-card-container.is-flipped .profile-card-inner { transform: rotateY(180deg); }
+
+    .profile-card-face {
+      position: absolute; width: 100%; height: 100%;
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      overflow: hidden; display: flex; flex-direction: column;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    .profile-card-front { --aug-inlay-bg: #0d1117; }
+    .profile-card-front img.main-photo {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        object-fit: cover; object-position: center top; z-index: 0;
+    }
+    .profile-card-front .overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 10%, rgba(0,0,0,0.6) 40%, transparent 100%);
+        z-index: 1;
+    }
+    .profile-card-front > .content-container {
+      position: relative; z-index: 2; width: 100%; height: 100%; padding: 1.25rem;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      align-items: flex-start; text-align: left;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* --- 4. GLASSMORPHISM --- */
+    .profile-card-back {
+      transform: rotateY(180deg);
+      --aug-inlay-bg: #12161f;
+      padding: 1.5rem; justify-content: space-between; z-index: 5;
+    }
+
+    .ghost-btn {
+        position: relative; border: none; color: white; background: transparent;
+        transition: transform 0.2s ease, box-shadow 0.2s ease; overflow: hidden; z-index: 1; cursor: pointer;
+    }
+    .ghost-btn::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), #8A2BE2, var(--neon-cyan));
+        background-size: 200% 100%; z-index: -2;
+        transition: opacity 0.3s ease;
+    }
+    .ghost-btn::after {
+        content: ''; position: absolute; top: 2px; left: 2px;
+        width: calc(100% - 4px); height: calc(100% - 4px);
+        background: #161b22; z-index: -1; border-radius: inherit;
+    }
+    .ghost-btn:hover::before {
+        animation: moveGradient 2.5s linear infinite;
+    }
+    @keyframes moveGradient { 0% { background-position: 0% 50%; } 100% { background-position: 150% 50%; } }
+    .ghost-btn:hover {
+        transform: scale(1.03); box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+    }
+    .light-sweep {
+        position: absolute; top: 0; left: -150%; width: 50%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transform: skewX(-25deg); transition: left 0.7s ease-in-out;
+    }
+    .ghost-btn:hover .light-sweep { left: 150%; }
+
+    .typewriter-text::after {
+      content: '|'; display: inline-block; vertical-align: baseline;
+      animation: blink-caret .75s step-end infinite; color: var(--neon-cyan);
+    }
+    .typewriter-text.typing-done::after {
+        content: '';
+        animation: none;
+    }
+    @keyframes blink-caret { from, to { opacity: 1; } 50% { opacity: 0; } }
+
+    .copy-btn { transition: color 0.2s; }
+    .copy-btn:hover { color: var(--neon-cyan); }
+    .copy-btn:active { transform: scale(0.9); }
+
+    #blacklist-table-body tr:hover { background-color: rgba(255, 0, 255, 0.1); }
+    #blacklist-table-body td { transition: color 0.3s; }
+    #blacklist-table-body tr:hover td { color: var(--neon-cyan); }
+
+    /* --- MOBILE OPTIMIZATION (GRID & PADDING) --- */
+    @media (max-width: 639px) {
+      body {
+        font-size: 14px;
+      }
+      /* Ensure Card is comfortable on mobile */
+      .profile-card-container {
+        height: 480px; /* Taller for mobile to fit content comfortably */
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      .profile-card-back {
+        padding: 1.25rem;
+        overflow-y: auto;
+      }
+      .profile-card-front > .content-container {
+        padding: 1.25rem;
+      }
+      /* Comfortable padding for lists on mobile */
+      #profile-grid {
+          padding-left: 1rem;
+          padding-right: 1rem;
+          gap: 2rem; /* Jarak antar elemen tidak terlalu rapat */
+      }
+
+      /* Navigation Bar adjustments */
+      header .container {
+          padding-top: 0.75rem;
+          padding-bottom: 0.75rem;
+      }
+    }
+
+    .lexend-font { font-family: 'Lexend', sans-serif; }
+    .neon-green-text { color: #00ff00; text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; }
+    .blinking-red { color: #ff0000; text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000; animation: blink-red 1s infinite; }
+    .blinking-yellow { color: #ffff00; text-shadow: 0 0 5px #ffff00, 0 0 10px #ffff00; animation: blink-yellow 1.5s infinite; }
+    @keyframes blink-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    @keyframes blink-yellow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+    .progress-bar-container { width: 100%; height: 20px; background-color: #333; border-radius: 5px; overflow: hidden; }
+    .progress-bar { width: 0%; height: 100%; background-color: #00ff00; transition: width 0.5s ease-in-out; }
+
+    /* Blinking Status Specific for Recruitment Grid */
+    .blinking-red-status { animation: blink-status-red 2s infinite; }
+    @keyframes blink-status-red {
+        0%, 100% { border-color: rgba(255, 0, 0, 0.3); color: #ff4444; }
+        50% { border-color: rgba(255, 0, 0, 0.1); color: #aa2222; }
+    }
+
+    #edit-nickname-modal.active { opacity: 1; pointer-events: auto; }
+    #edit-nickname-modal.active .modal-content { transform: scale(1); }
+
+/* Custom Dropdown Styling for Recruitment Section */
+#tester-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+#tester-select:focus {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+#single-tester-card > div {
+    /* Use the existing heroImageEnter animation for a smooth entrance */
+    animation: heroImageEnter 0.4s ease-out forwards;
+}
+
+/* --- MEMBER DETAIL PAGE --- */
+.detail-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.detail-link:hover {
+    text-decoration: none;
+    color: #fff;
+}
+
+.member-detail .member-photo-wrapper img {
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.member-detail .member-photo-wrapper:hover img {
+    transform: scale(1.02);
+}
+
+.member-detail .social-btn {
+    text-decoration: none;
+}
+
+.certificate-card img {
+    background: #0a0a0a;
+}
+
+/* Ensure detail page readable on narrow screens */
+@media (max-width: 640px) {
+    .member-detail > div {
+        padding: 1.25rem !important;
+    }
+    .member-detail .member-photo-wrapper img {
+        aspect-ratio: 4 / 5;
+    }
+    .quote-block,
+    .quote-block-placeholder {
+        padding: 1.25rem !important;
+    }
+    .quote-block p {
+        padding-left: 2rem !important;
+        padding-right: 0.25rem !important;
+        font-size: 0.95rem !important;
+    }
+    .quote-block i.fa-quote-left,
+    .quote-block i.fa-quote-right {
+        font-size: 1.5rem !important;
+    }
+    .certificate-card .aspect-\[4\/3\] {
+        aspect-ratio: 4 / 3;
+    }
+}
+
+/* Enhance verified chip on card front */
+.profile-card-front [class*="Verified"] {
+    animation: none;
+}
+
+/* ======================================================================
+   MEMBER DETAIL — PREMIUM REFRESH
+   ====================================================================== */
+
+/* Outer shell with gradient border + glass */
+.member-detail .profile-shell {
+    position: relative;
+    background:
+      radial-gradient(1200px 400px at -10% -20%, rgba(0,255,255,0.08), transparent 60%),
+      radial-gradient(900px 300px at 110% 120%, rgba(255,0,255,0.08), transparent 60%),
+      linear-gradient(180deg, rgba(13,17,23,0.9), rgba(10,14,20,0.9));
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow:
+      0 10px 40px rgba(0,0,0,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.04);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+.member-detail .profile-shell::before {
+    content: '';
+    position: absolute; inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(0,255,255,0.35), rgba(255,0,255,0.25) 50%, rgba(0,255,255,0.05));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+    opacity: .6;
+}
+
+/* --- PREMIUM PHOTO FRAME --- */
+.premium-photo-frame {
+    position: relative;
+    padding: 2px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(0,255,255,0.55), rgba(255,0,255,0.35) 45%, rgba(0,255,255,0.1));
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04),
+      0 20px 60px -15px rgba(0,255,255,0.25),
+      0 10px 30px -10px rgba(255,0,255,0.18);
+    transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s;
+}
+.premium-photo-frame:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.06),
+      0 25px 70px -15px rgba(0,255,255,0.35),
+      0 14px 40px -12px rgba(255,0,255,0.25);
+}
+.premium-photo-frame::before {
+    content: '';
+    position: absolute; inset: -12px;
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(0,255,255,0.18), transparent 55%),
+      radial-gradient(circle at 80% 90%, rgba(255,0,255,0.15), transparent 55%);
+    filter: blur(24px);
+    z-index: -1;
+    pointer-events: none;
+}
+.premium-photo-inner {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #04060a;
+    aspect-ratio: 4 / 5;
+    isolation: isolate;
+}
+.premium-photo-img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center top;
+    display: block;
+    transition: transform .8s cubic-bezier(.2,.8,.2,1), filter .4s;
+    filter: saturate(1.05) contrast(1.03);
+}
+.premium-photo-frame:hover .premium-photo-img {
+    transform: scale(1.03);
+}
+/* subtle glass sheen over the photo */
+.premium-photo-glass {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(130deg, rgba(255,255,255,0.08), transparent 30%),
+      linear-gradient(0deg, rgba(0,0,0,0.55), transparent 45%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: .9;
+}
+/* inner vignette to push subject forward */
+.premium-photo-vignette {
+    position: absolute; inset: 0;
+    box-shadow: inset 0 0 80px rgba(0,0,0,0.55);
+    pointer-events: none;
+}
+.premium-photo-verified {
+    position: absolute;
+    top: 12px; right: 12px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: #a0faff;
+    background: rgba(10,14,20,0.55);
+    border: 1px solid rgba(0,255,255,0.45);
+    border-radius: 999px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 0 18px rgba(0,255,255,0.25);
+}
+
+/* --- IDENTITY BLOCK --- */
+.identity-block {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+.identity-badges {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    margin-bottom: .4rem;
+}
+.profile-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px;
+    font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+    font-weight: 700;
+    border-radius: 999px;
+    font-family: 'Orbitron', sans-serif;
+}
+.profile-badge-verified {
+    color: #a0faff;
+    background: linear-gradient(90deg, rgba(0,255,255,0.15), rgba(255,0,255,0.12));
+    border: 1px solid rgba(0,255,255,0.45);
+    box-shadow: 0 0 12px rgba(0,255,255,0.2);
+}
+.profile-badge-title {
+    color: #f2c7ff;
+    background: rgba(255,0,255,0.08);
+    border: 1px solid rgba(255,0,255,0.35);
+}
+.identity-name {
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.05;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: .01em;
+    background: linear-gradient(180deg, #ffffff 60%, #b8c1cc 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+.identity-handle-row {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: .45rem;
+    flex-wrap: wrap;
+}
+.identity-handle {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: .9rem;
+    color: #8be9fd;
+    background: rgba(0,255,255,0.06);
+    border: 1px solid rgba(0,255,255,0.22);
+    cursor: pointer;
+    transition: all .25s;
+    max-width: 100%;
+    word-break: break-all;
+}
+.identity-handle:hover {
+    background: rgba(0,255,255,0.12);
+    border-color: rgba(0,255,255,0.45);
+    color: #d1fbff;
+}
+.identity-handle i {
+    opacity: .6;
+    font-size: .75rem;
+}
+.icon-action {
+    width: 34px; height: 34px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px;
+    color: #9aa4b2;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all .25s;
+    cursor: pointer;
+}
+.icon-action:hover {
+    color: #a0faff;
+    border-color: rgba(0,255,255,0.4);
+    background: rgba(0,255,255,0.08);
+    box-shadow: 0 0 12px rgba(0,255,255,0.2);
+}
+
+/* Eyebrow section headers */
+.section-eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: .75rem;
+}
+.eyebrow-bar {
+    display: inline-block;
+    width: 22px; height: 2px;
+    border-radius: 2px;
+}
+.eyebrow-bar.cyan { background: linear-gradient(90deg, #00ffff, transparent); box-shadow: 0 0 8px rgba(0,255,255,0.6); }
+.eyebrow-bar.fuchsia { background: linear-gradient(90deg, #ff00ff, transparent); box-shadow: 0 0 8px rgba(255,0,255,0.6); }
+
+/* --- INFO CHIPS --- */
+.info-chip {
+    transition: transform .25s, border-color .25s, background .25s;
+}
+.info-chip:hover {
+    transform: translateY(-1px);
+    border-color: rgba(0,255,255,0.35) !important;
+}
+
+/* --- STATS --- */
+.profile-stats .stat-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 12px 10px;
+    text-align: center;
+    transition: all .25s;
+}
+.profile-stats .stat-card:hover {
+    border-color: rgba(0,255,255,0.3);
+    background: rgba(0,255,255,0.04);
+}
+.profile-stats .stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #e6faff;
+    line-height: 1.1;
+    min-height: 1.2em;
+}
+.profile-stats .stat-label {
+    font-size: 10px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .22em;
+    margin-top: 4px;
+    font-weight: 700;
+}
+
+/* --- QUICK ACTION BUTTONS --- */
+.action-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .18em;
+    color: #03131a;
+    background: linear-gradient(90deg, #00ffff, #ff00ff);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .25s, box-shadow .25s, filter .25s;
+    box-shadow: 0 8px 28px -8px rgba(0,255,255,0.5);
+}
+.action-primary:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+    box-shadow: 0 12px 32px -8px rgba(0,255,255,0.6), 0 0 24px rgba(255,0,255,0.25);
+}
+.action-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 18px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .18em;
+    color: #d1fbff;
+    background: rgba(0,255,255,0.06);
+    border: 1px solid rgba(0,255,255,0.35);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .25s;
+}
+.action-ghost:hover {
+    background: rgba(0,255,255,0.12);
+    border-color: rgba(0,255,255,0.6);
+    box-shadow: 0 0 16px rgba(0,255,255,0.2);
+}
+
+/* Mobile tweaks for new layout */
+@media (max-width: 640px) {
+    .member-detail .profile-shell {
+        padding: 1.1rem !important;
+    }
+    .premium-photo-inner {
+        aspect-ratio: 4 / 5;
+    }
+    .identity-name {
+        font-size: 1.75rem;
+    }
+    .profile-stats .stat-value { font-size: 1rem; }
+}
+
+/* =============================================================================
+ * DIGITAL E-KTP CARD (member detail) — cyberpunk take on the Indonesian KTP.
+ * All internal sizes are in `em`, driven by the card's `--w`, so the on-screen
+ * card and the fixed 900px export clone share one design and scale cleanly.
+ * Palette: bg #05070d · cyan #22d3ee · magenta #d946ef.
+ * ========================================================================== */
+.ektp-lock { overflow: hidden; }
+
+.ektp-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    background: radial-gradient(circle at 50% 30%, rgba(34,211,238,0.10), rgba(3,5,10,0.86) 60%), rgba(3,5,10,0.86);
+    backdrop-filter: blur(6px);
+    animation: ektp-fade .25s ease;
+}
+@keyframes ektp-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.ektp-modal {
+    position: relative;
+    width: 100%; max-width: 560px;
+    max-height: 92vh; overflow-y: auto;
+    background: linear-gradient(180deg, #0a0f1c, #05070d);
+    border: 1px solid rgba(34,211,238,0.25);
+    border-radius: 18px;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.8), 0 0 40px rgba(34,211,238,0.08);
+    padding: 22px 20px 24px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.ektp-close {
+    position: absolute; top: 12px; right: 12px;
+    width: 38px; height: 38px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(217,70,239,0.10); color: #f5d0fe;
+    border: 1px solid rgba(217,70,239,0.35);
+    cursor: pointer; transition: all .2s; z-index: 2;
+}
+.ektp-close:hover { background: rgba(217,70,239,0.25); color: #fff; }
+.ektp-modal-title {
+    font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    font-size: 15px; letter-spacing: .18em; text-transform: uppercase;
+    color: #e6faff; display: flex; align-items: center; gap: 8px;
+}
+.ektp-modal-title i { color: #22d3ee; }
+.ektp-hint {
+    font-family: 'Inter', sans-serif; font-size: 11px; color: #7c8aa5;
+    letter-spacing: .04em; text-align: center;
+}
+.ektp-hint i { color: #22d3ee; margin-right: 4px; }
+.ektp-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.ektp-controls .action-primary,
+.ektp-controls .action-ghost { font-family: 'Rajdhani', sans-serif; }
+
+/* --- 3D stage + flip ---------------------------------------------------- */
+.ektp-stage { perspective: 1800px; width: 100%; display: flex; justify-content: center; }
+.ektp-flip {
+    --w: min(500px, 82vw);
+    position: relative;
+    width: var(--w);
+    height: calc(var(--w) / 1.586);
+    font-size: calc(var(--w) / 30);
+    transform-style: preserve-3d;
+    transition: transform .85s cubic-bezier(.4,.15,.2,1);
+    cursor: pointer;
+}
+.ektp-flip.flipped { transform: rotateY(180deg); }
+
+.ektp-face {
+    position: absolute; inset: 0;
+    border-radius: 0.7em; overflow: hidden;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    background: linear-gradient(160deg, #0a1120 0%, #05070d 55%, #0a0716 100%);
+    border: 1px solid rgba(34,211,238,0.35);
+    box-shadow: inset 0 0 2.2em rgba(34,211,238,0.06), inset 0 0 0 1px rgba(255,255,255,0.02);
+    color: #e8f6ff;
+    font-family: 'Inter', sans-serif;
+    display: flex; flex-direction: column;
+    padding: 0.9em 1em;
+}
+.ektp-back { transform: rotateY(180deg); }
+
+/* On iOS/Safari, `overflow:hidden` + `backface-visibility:hidden` on the SAME
+   element cancel out, so the reversed front face bleeds through the back (its
+   mirrored text/photo overlapping the QR + terms). Guarantee a clean flip by
+   toggling each face's opacity at the flip's mid-point — when the card is
+   edge-on (~0.42s into the 0.85s rotation) — so exactly one face is ever
+   visible, never two overlapping. backface-visibility stays as a desktop
+   belt-and-suspenders. */
+.ektp-front { opacity: 1; }
+.ektp-back { opacity: 0; }
+.ektp-flip.flipped .ektp-front { opacity: 0; }
+.ektp-flip.flipped .ektp-back { opacity: 1; }
+.ektp-flip .ektp-face { transition: opacity 0s linear .42s; }
+
+/* subtle neon accents / holo sheen shared by both faces */
+.ektp-face::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+        radial-gradient(circle at 88% 8%, rgba(217,70,239,0.16), transparent 42%),
+        radial-gradient(circle at 6% 96%, rgba(34,211,238,0.16), transparent 42%);
+}
+.ektp-face::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(34,211,238,0.05) 1px, transparent 1px);
+    background-size: 100% 0.55em; opacity: .35;
+}
+.ektp-sheen {
+    position: absolute; top: -30%; right: -10%;
+    width: 55%; height: 160%;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%);
+    transform: rotate(12deg); pointer-events: none;
+}
+
+/* --- header ------------------------------------------------------------- */
+.ektp-hd {
+    position: relative; z-index: 2;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 0.6em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid rgba(34,211,238,0.22);
+}
+.ektp-hd-left { display: flex; align-items: center; gap: 0.55em; min-width: 0; }
+.ektp-logo { width: 2.3em; height: 2.3em; object-fit: contain; filter: drop-shadow(0 0 0.35em rgba(34,211,238,0.55)); }
+.ektp-hd-title { min-width: 0; }
+.ektp-hd-brand {
+    font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    font-size: 0.95em; line-height: 1; letter-spacing: .12em; color: #fff;
+    text-shadow: 0 0 0.5em rgba(34,211,238,0.4);
+}
+.ektp-hd-sub {
+    font-family: 'Rajdhani', sans-serif; font-weight: 500;
+    font-size: 0.5em; letter-spacing: .28em; text-transform: uppercase;
+    color: #22d3ee; margin-top: 0.25em; white-space: nowrap;
+}
+.ektp-hd-right { text-align: right; flex-shrink: 0; }
+.ektp-reg-label {
+    font-family: 'Rajdhani', sans-serif; font-size: 0.48em; letter-spacing: .22em;
+    text-transform: uppercase; color: #8aa0bd;
+}
+.ektp-reg-no {
+    font-family: 'Share Tech Mono', monospace; font-size: 0.72em;
+    color: #d946ef; letter-spacing: .06em; margin-top: 0.15em;
+    text-shadow: 0 0 0.5em rgba(217,70,239,0.4);
+}
+
+/* --- front body: photo + fields ---------------------------------------- */
+.ektp-body {
+    position: relative; z-index: 2;
+    flex: 1; min-height: 0;
+    display: flex; gap: 0.9em; padding-top: 0.7em;
+}
+.ektp-photo-col { width: 7em; flex-shrink: 0; display: flex; flex-direction: column; gap: 0.45em; }
+.ektp-photo {
+    width: 100%; height: 8.75em; border-radius: 0.4em; overflow: hidden;
+    border: 1px solid rgba(34,211,238,0.5);
+    box-shadow: 0 0 0.8em rgba(34,211,238,0.2), inset 0 0 0 1px rgba(0,0,0,0.3);
+    background: #0a1120;
+}
+.ektp-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ektp-verif {
+    font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    font-size: 0.5em; letter-spacing: .16em; text-align: center;
+    padding: 0.5em 0.3em; border-radius: 0.5em;
+    color: #04120e; background: linear-gradient(90deg, #22d3ee, #34d399);
+    box-shadow: 0 0 0.7em rgba(34,211,238,0.4);
+    display: flex; align-items: center; justify-content: center; gap: 0.4em;
+}
+.ektp-verif--plain {
+    color: #cfe9ff; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15); box-shadow: none;
+}
+
+.ektp-fields { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.55em; }
+.ektp-field { display: flex; flex-direction: column; min-width: 0; }
+.ektp-field-row { display: flex; gap: 0.8em; }
+.ektp-field-row .ektp-field { flex: 1; }
+.ektp-lbl {
+    font-family: 'Rajdhani', sans-serif; font-weight: 600;
+    font-size: 0.46em; letter-spacing: .2em; text-transform: uppercase;
+    color: #6fb7cc; margin-bottom: 0.15em;
+}
+.ektp-val {
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    font-size: 0.62em; color: #eaf6ff; line-height: 1.15;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ektp-mono { font-family: 'Share Tech Mono', monospace; letter-spacing: .02em; }
+.ektp-val--name {
+    font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    font-size: 0.92em; color: #fff; letter-spacing: .01em;
+    text-shadow: 0 0 0.4em rgba(34,211,238,0.25);
+}
+.ektp-val--status { color: #7ef0d1; }
+.ektp-role {
+    align-self: flex-start; margin-top: 0.3em;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    font-size: 0.46em; letter-spacing: .12em; text-transform: uppercase;
+    color: #fce7ff; padding: 0.28em 0.7em; border-radius: 999px;
+    background: linear-gradient(90deg, rgba(217,70,239,0.35), rgba(34,211,238,0.25));
+    border: 1px solid rgba(217,70,239,0.5);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+
+/* --- front footer: motto + decorative barcode signature ---------------- */
+.ektp-ft {
+    position: relative; z-index: 2;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 0.8em;
+    padding-top: 0.55em; margin-top: 0.4em;
+    border-top: 1px solid rgba(34,211,238,0.22);
+}
+.ektp-motto {
+    font-family: 'Inter', sans-serif; font-style: italic; font-size: 0.55em;
+    color: #b9d6e6; line-height: 1.3; flex: 1; min-width: 0;
+    max-height: 2.6em;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.ektp-motto--empty { color: #6b7f92; }
+.ektp-sign { flex-shrink: 0; width: 9em; text-align: right; }
+.ektp-sign-label {
+    font-family: 'Rajdhani', sans-serif; font-size: 0.42em; letter-spacing: .18em;
+    text-transform: uppercase; color: #6fb7cc; margin-bottom: 0.35em;
+}
+.ektp-barcode {
+    height: 1.6em; width: 100%;
+    border-radius: 0.15em; overflow: hidden;
+    padding: 0.2em; background-color: #dbeafe;
+    box-shadow: 0 0 0.5em rgba(34,211,238,0.15);
+}
+.ektp-barcode-img { display: block; width: 100%; height: 100%; object-fit: fill; }
+/* Decorative CSS fallback if the barcode data URI could not be generated —
+   never leave an empty white box. */
+.ektp-barcode-fallback {
+    display: block; width: 100%; height: 100%;
+    background-image: repeating-linear-gradient(90deg,
+        #0a0f18 0 2px, transparent 2px 3px, #0a0f18 3px 4px, transparent 4px 7px);
+}
+
+/* --- back face ---------------------------------------------------------- */
+.ektp-hd--back { border-bottom-color: rgba(217,70,239,0.28); }
+.ektp-back-body {
+    position: relative; z-index: 2; flex: 1; min-height: 0;
+    display: flex; gap: 1em; padding-top: 0.8em; align-items: stretch;
+}
+.ektp-qr-col { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 0.4em; }
+.ektp-qr {
+    width: 6.4em; height: 6.4em; border-radius: 0.4em; overflow: hidden;
+    background: #fff; padding: 0.35em;
+    border: 1px solid rgba(34,211,238,0.5);
+    box-shadow: 0 0 0.9em rgba(34,211,238,0.28);
+}
+.ektp-qr img { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+.ektp-qr-fallback { font-size: 0.5em; color: #333; text-align: center; padding-top: 2.5em; }
+.ektp-qr-cap {
+    font-family: 'Rajdhani', sans-serif; font-weight: 600;
+    font-size: 0.42em; letter-spacing: .18em; color: #22d3ee; text-transform: uppercase;
+}
+.ektp-back-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; }
+.ektp-terms {
+    font-family: 'Inter', sans-serif; font-size: 0.5em; line-height: 1.5;
+    color: #9fb6c9;
+}
+.ektp-meta { display: flex; gap: 0.8em; margin-top: 0.6em; }
+.ektp-meta-item {
+    flex: 1; background: rgba(34,211,238,0.05);
+    border: 1px solid rgba(34,211,238,0.18); border-radius: 0.4em;
+    padding: 0.4em 0.55em;
+}
+.ektp-meta-item b { display: block; font-size: 0.6em; color: #eaf6ff; margin-top: 0.2em; font-weight: 700; }
+
+/* --- decorative MRZ (machine-readable zone) ---------------------------- */
+.ektp-mrz {
+    position: relative; z-index: 2; margin-top: 0.6em;
+    padding: 0.4em 0.5em; border-radius: 0.35em;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.56em; letter-spacing: 0.18em; line-height: 1.5;
+    color: #9fe9f6; white-space: nowrap; overflow: hidden;
+}
+
+/* --- glare sweep (once per flip, ~0.85s, synced to the flip) ------------ */
+.ektp-glare {
+    position: absolute; top: -25%; left: 0;
+    width: 45%; height: 150%;
+    background: linear-gradient(105deg,
+        transparent 30%,
+        rgba(255,255,255,0.28) 45%,
+        rgba(34,211,238,0.35) 50%,
+        rgba(255,255,255,0.15) 55%,
+        transparent 70%);
+    transform: translateX(-160%) rotate(10deg);
+    opacity: 0; pointer-events: none; z-index: 5;
+    mix-blend-mode: screen;
+}
+.ektp-glare.run { animation: ektp-glare-sweep .85s ease-in-out; }
+@keyframes ektp-glare-sweep {
+    0%   { transform: translateX(-160%) rotate(10deg); opacity: 0; }
+    12%  { opacity: 1; }
+    85%  { opacity: 0.7; }
+    100% { transform: translateX(320%) rotate(10deg); opacity: 0; }
+}
+
+/* --- off-screen export clone (explicit 900px width, no transform, no 3D) ---
+   Placed off-screen but fully visible/painted (never display:none / hidden /
+   opacity:0 / rotateY / scale / perspective / backface — those break capture).
+   Height grows with content (min-height keeps the card ratio) so nothing is
+   ever clipped, and it must not inherit the mobile media query. */
+.ektp-capture-holder {
+    position: fixed; left: -10000px; top: 0;
+    display: block; visibility: visible; opacity: 1;
+    transform: none; z-index: -1; pointer-events: none;
+}
+.ektp-capture {
+    position: static !important;
+    width: 900px !important;
+    min-height: 567px !important;
+    height: auto !important;
+    font-size: 30px !important;
+    transform: none !important;
+    perspective: none !important;
+    backface-visibility: visible !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+    margin: 0;
+}
+.ektp-capture .ektp-glare { display: none; }
+
+/* --- export-only overrides: relax the on-screen truncation so every value,
+   the name, the status and the quote render in full (no clipped descenders,
+   no cut-off footer). Only affects the off-screen export clone. --------------- */
+.is-exporting,
+.is-exporting * { box-sizing: border-box; }
+.is-exporting .ektp-body,
+.is-exporting .ektp-photo-col,
+.is-exporting .ektp-fields,
+.is-exporting .ektp-field,
+.is-exporting .ektp-ft,
+.is-exporting .ektp-sign { overflow: visible !important; }
+.is-exporting .ektp-lbl,
+.is-exporting .ektp-val,
+.is-exporting .ektp-val--name,
+.is-exporting .ektp-val--status,
+.is-exporting .ektp-role,
+.is-exporting .ektp-motto {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+}
+/* Tight line-height minimises html2canvas' leading mis-placement (which made
+   text sit too low on its baseline); overflow:visible keeps descenders safe. */
+.is-exporting .ektp-lbl { line-height: 1.1 !important; }
+.is-exporting .ektp-val,
+.is-exporting .ektp-val--status {
+    line-height: 1.12 !important; min-height: 1.05em; padding-bottom: 0.06em;
+}
+.is-exporting .ektp-val--name {
+    line-height: 1.12 !important; min-height: 1em; padding-bottom: 0.08em;
+}
+.is-exporting .ektp-motto {
+    line-height: 1.35 !important;
+    -webkit-line-clamp: unset !important; -webkit-box-orient: horizontal;
+    display: block !important; padding-bottom: 0.12em;
+}
+/* Pills / boxes: centre uppercase text vertically with line-height:1 + symmetric
+   padding so it sits dead-centre in html2canvas (align-items alone renders low). */
+.is-exporting .ektp-role {
+    display: inline-flex !important; align-items: center; justify-content: center;
+    width: auto; line-height: 1 !important;
+    padding-top: 0.46em !important; padding-bottom: 0.46em !important;
+}
+.is-exporting .ektp-verif {
+    align-items: center !important; line-height: 1 !important;
+    padding-top: 0.62em !important; padding-bottom: 0.62em !important;
+}
+.is-exporting .ektp-ft { align-items: flex-start; }
+
+/* --- responsive: keep the card comfortably readable on small phones ---- */
+@media (max-width: 420px) {
+    .ektp-flip { --w: 92vw; }
+    .ektp-modal { padding: 18px 12px 20px; }
+}

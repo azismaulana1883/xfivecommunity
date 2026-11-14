@@ -1,0 +1,11 @@
+# robots.txt — XFIVE AyoDance community site
+User-agent: *
+Allow: /
+
+# Halaman privat / tidak untuk diindeks
+Disallow: /admin.html
+Disallow: /blacklist.html
+
+Sitemap: https://www.xfivephoto.com/sitemap.xml
+Sitemap: https://www.xfivephoto.com/sitemap-members.xml
+Sitemap: https://www.xfivephoto.com/sitemap-articles.xml

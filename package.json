@@ -1,0 +1,45 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "dev:api": "npm --prefix ../xfiveapi run dev",
+    "build:api": "npm --prefix ../xfiveapi run build",
+    "start:api": "npm --prefix ../xfiveapi start",
+    "dev:backend": "npm --prefix ../xfiveapi run dev",
+    "build:backend": "npm --prefix ../xfiveapi run build",
+    "start:backend": "npm --prefix ../xfiveapi start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ramsky1881/memberxfive2025.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ramsky1881/memberxfive2025/issues"
+  },
+  "homepage": "https://github.com/Ramsky1881/memberxfive2025#readme",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.10",
+    "dotenv": "^17.2.3",
+    "vite": "^8.3.6"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^1.2.2",
+    "axios": "^1.21.0",
+    "cookie": "^1.1.1",
+    "html2canvas": "^1.4.1",
+    "lucide-vue-next": "^1.0.0",
+    "mysql2": "^3.24.6",
+    "vue": "^3.5.45",
+    "vue-router": "^5.4.0",
+    "xlsx": "^0.18.5"
+  }
+}

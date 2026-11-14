@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XFIVE AyoDance Community – Official Website & Member Database</title>
+
+  <!-- Favicon / Website Tab Icon -->
+  <link rel="icon" type="image/svg+xml" href="/xfive.svg" />
+  <link rel="alternate icon" type="image/svg+xml" href="/xfive.svg" />
+  <link rel="apple-touch-icon" href="/xfive.svg" />
+
+  <meta name="description" content="Komunitas Resmi Audition AyoDance XFIVE Server Love-01. Portal resmi anggota, jadwal gathering & meetup nasional, dokumentasi kegiatan, dan pendaftaran anggota baru." />
+  <link rel="canonical" href="https://www.xfivephoto.com/" />
+
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="XFIVE AyoDance Community" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="id_ID" />
+  <meta property="og:title" content="XFIVE AyoDance Community – Official Website & Member Database" />
+  <meta property="og:description" content="Komunitas Resmi Audition AyoDance XFIVE Server Love-01. Portal resmi anggota, jadwal gathering & meetup nasional, dokumentasi kegiatan, dan pendaftaran anggota baru." />
+  <meta property="og:url" content="https://www.xfivephoto.com/" />
+  <meta property="og:image" content="https://www.xfivephoto.com/img/xfive-team2.webp" />
+  <meta property="og:image:secure_url" content="https://www.xfivephoto.com/img/xfive-team2.webp" />
+  <meta property="og:image:type" content="image/webp" />
+  <meta property="og:image:width" content="1175" />
+  <meta property="og:image:height" content="1000" />
+  <meta property="og:image:alt" content="XFIVE AyoDance Community Squad" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="XFIVE AyoDance Community – Official Website & Member Database" />
+  <meta name="twitter:description" content="Komunitas Resmi Audition AyoDance XFIVE Server Love-01. Portal resmi anggota, jadwal gathering & meetup nasional, dan dokumentasi kegiatan." />
+  <meta name="twitter:image" content="https://www.xfivephoto.com/img/xfive-team2.webp" />
+
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'neon-blue': '#00FFFF',
+            'neon-purple': '#8A2BE2',
+            'neon-pink': '#FF69B4',
+            'neon-green': '#39FF14',
+            'cyber-black': '#0a0a0a',
+            'cyber-gray': '#1a1a1a',
+            'ink': '#e8ecf4',
+            'ink-muted': '#a9b1c1',
+            'ink-dim': '#8a91a0',
+            'surface': '#121218',
+            'surface-raised': '#17171f',
+            'surface-sunken': '#0d0d11',
+            'hairline': 'rgba(255, 255, 255, 0.08)',
+            'ok': '#4ade80',
+            'warn': '#fbbf24',
+            'danger': '#f87171',
+            'danger-strong': '#ef4444'
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            rajdhani: ['Rajdhani', 'sans-serif'],
+            inter: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- QR Code & Canvas Libraries (Recruitment QR & E-KTP) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Augmented UI -->
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+
+  <!-- Cloudflare Turnstile (Anti-Bot) -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="text-gray-200 bg-[#0d1117]">
+  <div id="app"></div>
+
+  <!-- E-KTP Canvas Module -->
+  <script src="/js/ektp.js"></script>
+
+  <!-- Vite App Bootstrap -->
+  <script type="module" src="/src/main.js"></script>
+
+  <!-- Schema.org Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "AyoDance itu game apa?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "AyoDance adalah game rhythm/dance di mana pemain mengikuti beat musik dan menekan tombol sesuai timing untuk mendapat skor tinggi (Perfect)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Apa itu XFIVE / X5?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "XFIVE / X5 Adalah sebuah community dari game Audition Ayodance yang berfokus ke meetup / gathring se-indonesia"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Gimana Cara Bergabung ke XFIVE?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Kamu cukup cari kami di server love-01 dan temukan tester xfive yang sedang bertugas disana."
+        }
+      }
+    ]
+  }
+  </script>
+</body>
+</html>

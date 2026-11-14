@@ -122,7 +122,13 @@ export function useAdminAuth() {
         return false;
       }
     } catch (err: any) {
-      loginError.value = err.response?.data?.message || 'Gagal login. Username atau password salah.';
+      if (err.response?.data?.message) {
+        loginError.value = err.response.data.message;
+      } else if (err.code === 'ERR_NETWORK' || !err.response) {
+        loginError.value = 'Gagal terhubung ke server backend API. Pastikan server backend sedang aktif.';
+      } else {
+        loginError.value = 'Gagal login. Username atau password salah.';
+      }
       return false;
     } finally {
       loginLoading.value = false;

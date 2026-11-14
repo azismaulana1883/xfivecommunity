@@ -1,8 +1,11 @@
 import axios, { type AxiosRequestConfig } from 'axios';
 
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const apiBase = isLocal ? (import.meta.env.VITE_API_URL || '') : '';
+
 export const adminClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '',
-  withCredentials: true,
+  baseURL: apiBase,
+  withCredentials: false,
   headers: {
     'Content-Type': 'application/json'
   }

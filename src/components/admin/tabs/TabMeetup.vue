@@ -27,20 +27,29 @@ import { useConfirm } from '@/composables/useConfirm';
 import { adminApi } from '@/utils/admin/adminApi';
 import MultiSearchSelect, { type MultiSelectOption, type MultiSelectPreset } from '@/components/MultiSearchSelect.vue';
 import { ALL_INDONESIA_REGENCIES } from '@/data/indonesiaRegencies';
+import { useAdminAuth } from '@/composables/admin/useAdminAuth';
 
 const toast = useToast();
 const { confirm: confirmModal } = useConfirm();
+const { currentUser } = useAdminAuth();
 const {
   meetupsList,
   loadingMeetups,
   fetchMeetups,
   saveMeetup,
+  approveExpUp,
+  rejectExpUp,
   finalizeMeetup,
   deleteMeetup,
   fetchAttendances,
   updateAttendanceStatus,
   parseMapsLink
 } = useAdminMeetups();
+
+const canApproveExpUp = computed(() => {
+  const role = (currentUser.role || '').toLowerCase();
+  return ['superadmin', 'owner', 'leader', 'vice_leader', 'vice'].includes(role);
+});
 
 const meetupSearch = ref('');
 const meetupRegionFilter = ref('all');
@@ -117,6 +126,9 @@ const meetupForm = reactive({
   longitude: 106.6212,
   radius_meters: 10,
   description: '',
+  has_exp_up: false,
+  exp_multiplier: 2.0,
+  exp_up_note: '',
 });
 
 onMounted(() => {
@@ -228,6 +240,9 @@ const openAddMeetupModal = () => {
   meetupForm.longitude = 106.6212;
   meetupForm.radius_meters = 10;
   meetupForm.description = '';
+  meetupForm.has_exp_up = false;
+  meetupForm.exp_multiplier = 2.0;
+  meetupForm.exp_up_note = '';
   meetupFormError.value = '';
   mapsParseFeedback.value = null;
   meetupBannerMode.value = 'url';
@@ -407,14 +422,56 @@ const handleSaveMeetup = async () => {
     longitude: meetupForm.longitude,
     radius_meters: meetupForm.radius_meters,
     description: meetupForm.description.trim(),
+    has_exp_up: meetupForm.has_exp_up,
+    exp_multiplier: Number(meetupForm.exp_multiplier) || 2.0,
+    exp_up_note: meetupForm.exp_up_note.trim(),
   });
 
   if (res.success) {
     addMeetupModalOpen.value = false;
+    toast.success('Agenda meetup berhasil dibuat!', 'Berhasil');
   } else {
     meetupFormError.value = res.message || 'Gagal membuat meetup.';
   }
   isSavingMeetup.value = false;
+};
+
+const handleApproveExp = async (m: MeetupItem) => {
+  const mult = m.exp_multiplier || 2;
+  const expTotal = Math.round(3 * mult);
+  const ok = await confirmModal({
+    title: 'SETUJUI EVENT EXP UP?',
+    message: `Setujui pengajuan Booster EXP x${mult} untuk "${m.title}"?\nSetiap member yang hadir akan memperoleh +${expTotal} EXP (normal 3 EXP).`,
+    confirmText: 'Ya, Setujui EXP UP',
+    cancelText: 'Batal',
+    type: 'success',
+  });
+  if (!ok) return;
+
+  const res = await approveExpUp(m.id);
+  if (res.success) {
+    toast.success(res.message || 'EXP UP berhasil disetujui!', 'EXP UP Disetujui');
+  } else {
+    toast.error(res.message || 'Gagal menyetujui EXP UP.', 'Gagal');
+  }
+};
+
+const handleRejectExp = async (m: MeetupItem) => {
+  const ok = await confirmModal({
+    title: 'TOLAK EVENT EXP UP?',
+    message: `Tolak pengajuan EXP UP untuk "${m.title}"? Meetup ini akan berjalan dengan EXP normal (+3 EXP per kehadiran).`,
+    confirmText: 'Ya, Tolak EXP UP',
+    cancelText: 'Batal',
+    type: 'danger',
+  });
+  if (!ok) return;
+
+  const res = await rejectExpUp(m.id);
+  if (res.success) {
+    toast.info(res.message || 'Pengajuan EXP UP ditolak.', 'EXP UP Ditolak');
+  } else {
+    toast.error(res.message || 'Gagal menolak EXP UP.', 'Gagal');
+  }
 };
 
 const openQrModal = (m: MeetupItem) => {
@@ -600,6 +657,49 @@ const exportAttendanceToExcel = () => {
               <td class="py-3 px-4">
                 <div class="font-bold text-white font-orbitron text-xs">{{ m.title }}</div>
                 <div class="text-[10px] text-cyan-400 font-mono mt-0.5">Token: {{ m.qr_token }}</div>
+
+                <!-- EXP UP Booster Status Badge -->
+                <div v-if="m.has_exp_up" class="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                  <span
+                    v-if="m.exp_up_status === 'APPROVED'"
+                    class="px-2 py-0.5 rounded text-[10px] font-bold font-orbitron uppercase bg-amber-500/15 border border-amber-500/40 text-amber-300 flex items-center gap-1 shadow-[0_0_8px_rgba(245,158,11,0.2)]"
+                  >
+                    <Sparkles class="w-3 h-3 text-amber-400" />
+                    <span>EXP x{{ m.exp_multiplier || 2 }} AKTIF (+{{ (3 * (m.exp_multiplier || 2)).toFixed(0) }} EXP)</span>
+                  </span>
+                  <span
+                    v-else-if="m.exp_up_status === 'PENDING'"
+                    class="px-2 py-0.5 rounded text-[10px] font-bold font-mono text-yellow-300 bg-yellow-500/15 border border-yellow-500/30 flex items-center gap-1 animate-pulse"
+                  >
+                    <span>⏳ EXP x{{ m.exp_multiplier || 2 }} Menunggu Approval</span>
+                  </span>
+                  <span
+                    v-else-if="m.exp_up_status === 'REJECTED'"
+                    class="px-2 py-0.5 rounded text-[10px] font-bold font-mono text-red-400 bg-red-500/10 border border-red-500/20"
+                  >
+                    <span>EXP UP Ditolak</span>
+                  </span>
+
+                  <!-- Quick Approval Buttons for Leadership (Owner, Leader, Vice Leader) -->
+                  <div v-if="canApproveExpUp && m.exp_up_status === 'PENDING'" class="flex items-center gap-1">
+                    <button
+                      type="button"
+                      @click.stop="handleApproveExp(m)"
+                      class="px-2 py-0.5 rounded bg-emerald-500 hover:bg-emerald-400 text-black text-[10px] font-bold font-orbitron uppercase transition cursor-pointer"
+                      title="Setujui Pengajuan EXP UP Meetup Ini"
+                    >
+                      ACC
+                    </button>
+                    <button
+                      type="button"
+                      @click.stop="handleRejectExp(m)"
+                      class="px-2 py-0.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-[10px] font-mono transition cursor-pointer"
+                      title="Tolak Pengajuan EXP UP"
+                    >
+                      Tolak
+                    </button>
+                  </div>
+                </div>
               </td>
 
               <td class="py-3 px-4">
@@ -999,6 +1099,65 @@ const exportAttendanceToExcel = () => {
             <MapPin v-else class="w-3.5 h-3.5" />
             <span>Kunci Titik GPS Berdasarkan Lokasi Saya Saat Ini</span>
           </button>
+
+          <!-- EXP UP Booster Settings (Staff Meetup & Leadership Approval) -->
+          <div class="p-3.5 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-950/20 via-orange-950/10 to-yellow-950/20 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <Sparkles class="w-4 h-4 text-amber-400" />
+                <div>
+                  <span class="text-xs font-orbitron font-bold text-amber-300 uppercase tracking-wider block">
+                    Event Booster EXP UP (Meetup Spesial)
+                  </span>
+                  <span class="text-[10px] text-gray-400 font-mono">
+                    Memberikan multiplier EXP kehadiran (misal x1.5, x2, x3)
+                  </span>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  v-model="meetupForm.has_exp_up"
+                  class="sr-only peer"
+                />
+                <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+              </label>
+            </div>
+
+            <div v-if="meetupForm.has_exp_up" class="space-y-2.5 pt-2 border-t border-amber-500/20">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-orbitron uppercase text-gray-300 font-bold mb-1">
+                    Besaran Multiplier EXP
+                  </label>
+                  <select
+                    v-model.number="meetupForm.exp_multiplier"
+                    class="w-full p-2.5 rounded-xl bg-black/60 border border-amber-500/40 text-amber-300 font-bold font-mono text-xs outline-none"
+                  >
+                    <option :value="1.5">EXP x1.5 (+4.5 EXP per kehadiran)</option>
+                    <option :value="2.0">EXP x2.0 (+6.0 EXP per kehadiran)</option>
+                    <option :value="2.5">EXP x2.5 (+7.5 EXP per kehadiran)</option>
+                    <option :value="3.0">EXP x3.0 (+9.0 EXP per kehadiran)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-orbitron uppercase text-gray-300 font-bold mb-1">
+                    Tema / Alasan EXP UP
+                  </label>
+                  <input
+                    type="text"
+                    v-model="meetupForm.exp_up_note"
+                    placeholder="Contoh: Gathering Akbar / Ulang Tahun Regional"
+                    class="w-full p-2.5 rounded-xl bg-black/60 border border-gray-800 text-white text-xs outline-none font-mono"
+                  />
+                </div>
+              </div>
+              <p class="text-[10px] text-amber-300/90 font-mono flex items-center gap-1.5">
+                <AlertTriangle class="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>Pengajuan EXP UP memerlukan persetujuan (Approval) dari Owner / Leader / Vice Leader sebelum aktif pada presensi member.</span>
+              </p>
+            </div>
+          </div>
 
           <div>
             <div class="flex items-center justify-between mb-1.5">

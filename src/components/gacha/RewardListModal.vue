@@ -66,6 +66,12 @@
                 >
                   {{ rew.category }}
                 </span>
+                <span
+                  class="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold uppercase border bg-black/60"
+                  :style="{ color: getTierColor(rew.tier_level), borderColor: `${getTierColor(rew.tier_level)}60` }"
+                >
+                  {{ getTierBadge(rew.tier_level) }}
+                </span>
               </div>
               <div class="text-[11px] text-gray-400 font-mono mt-0.5">
                 {{ rew.description || (rew.category === 'MI-CASH' ? 'Voucher langsung didapat saat roll' : 'Hadiah klaim via Staff') }}
@@ -116,6 +122,8 @@
 </template>
 
 <script setup>
+import { getTierByLevel } from '@/utils/tiers';
+
 const props = defineProps({
   rewards: {
     type: Array,
@@ -132,6 +140,16 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close']);
+
+const getTierColor = (level) => {
+  const t = getTierByLevel(level || 1);
+  return t ? t.color : '#cd7f32';
+};
+
+const getTierBadge = (level) => {
+  const t = getTierByLevel(level || 1);
+  return t ? t.badge : '🥉 Bronze';
+};
 </script>
 
 <style scoped>

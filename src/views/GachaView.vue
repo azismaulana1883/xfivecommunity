@@ -263,17 +263,82 @@
                   </button>
                 </div>
 
-                <!-- Poin Stats -->
-                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/10 text-xs font-mono text-center">
-                  <div class="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                    <div class="text-[10px] text-gray-400 uppercase">Total Kehadiran</div>
-                    <div class="text-sm sm:text-base font-bold text-white mt-0.5">{{ memberInfo.total_hadir }} Meetup</div>
+                <!-- Poin & EXP Stats (4 Grid Cards on Mobile & Desktop) -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-white/10 text-xs font-mono text-center">
+                  <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                    <div class="text-[9px] sm:text-[10px] text-gray-400 uppercase">Kehadiran</div>
+                    <div class="text-xs sm:text-sm font-bold text-white mt-0.5 truncate">{{ memberInfo.total_hadir }} Meetup</div>
                   </div>
-                  <div class="p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-500/40">
-                    <div class="text-[10px] text-cyan-400 uppercase font-bold">Sisa Poin Gacha</div>
-                    <div class="text-sm sm:text-base font-black font-orbitron text-cyan-300 mt-0.5">
-                      {{ memberInfo.available_points }} <span class="text-[11px] font-normal">Poin</span>
+                  <div class="p-2 rounded-xl bg-purple-950/30 border border-purple-500/30">
+                    <div class="text-[9px] sm:text-[10px] text-purple-300 uppercase font-bold flex items-center justify-center gap-1">
+                      <i class="fas fa-bolt text-amber-400 text-[10px]"></i>
+                      <span>Total EXP</span>
                     </div>
+                    <div class="text-xs sm:text-sm font-bold text-purple-200 mt-0.5">{{ memberTierStatus.totalExp }} EXP</div>
+                  </div>
+                  <div class="p-2 rounded-xl bg-black/50 border" :class="memberTierStatus.currentTier?.borderColor || 'border-gray-700'">
+                    <div class="text-[9px] sm:text-[10px] text-gray-400 uppercase">Tingkatan</div>
+                    <div class="text-xs sm:text-sm font-black mt-0.5 truncate" :style="{ color: memberTierStatus.currentTier?.color || '#9ca3af' }">
+                      {{ memberTierStatus.currentTier?.name || 'Novice' }}
+                    </div>
+                  </div>
+                  <div class="p-2 rounded-xl bg-cyan-950/40 border border-cyan-500/40">
+                    <div class="text-[9px] sm:text-[10px] text-cyan-400 uppercase font-bold">Poin Gacha</div>
+                    <div class="text-xs sm:text-sm font-black font-orbitron text-cyan-300 mt-0.5">
+                      {{ memberInfo.available_points }} <span class="text-[10px] font-normal">Poin</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- EXP Progress Bar & Level Status -->
+                <div class="p-3 rounded-xl bg-black/40 border border-white/10 space-y-2">
+                  <div class="flex items-center justify-between text-[11px] font-mono">
+                    <span class="text-gray-300 flex items-center gap-1.5">
+                      <span>Status:</span>
+                      <span class="font-bold font-orbitron" :style="{ color: memberTierStatus.currentTier?.color || '#9ca3af' }">
+                        {{ memberTierStatus.currentTier ? memberTierStatus.currentTier.badge : 'Novice (< 10 EXP)' }}
+                      </span>
+                    </span>
+                    <span v-if="memberTierStatus.nextTier" class="text-gray-400 text-[10px]">
+                      Target: <strong class="text-white">{{ memberTierStatus.nextTier.badge }}</strong> ({{ memberTierStatus.nextTier.minExp }} EXP)
+                    </span>
+                    <span v-else class="text-pink-400 font-bold text-[10px]">
+                      PUNCAK TERTINGGI!
+                    </span>
+                  </div>
+
+                  <!-- Progress Bar Line -->
+                  <div class="w-full h-2.5 bg-gray-800 rounded-full overflow-hidden relative shadow-inner">
+                    <div
+                      class="h-full bg-gradient-to-r from-amber-500 via-cyan-400 to-purple-500 transition-all duration-700 rounded-full shadow-[0_0_10px_rgba(0,255,255,0.5)]"
+                      :style="{ width: `${memberTierStatus.progressPercentage}%` }"
+                    ></div>
+                  </div>
+
+                  <div class="flex items-center justify-between text-[10px] font-mono text-gray-400">
+                    <span v-if="!memberTierStatus.isGachaUnlocked" class="text-amber-400 font-bold flex items-center gap-1">
+                      <i class="fas fa-lock text-[10px]"></i>
+                      <span>Butuh {{ memberTierStatus.remainingExpToUnlock }} EXP lagi untuk buka Gacha Bronze</span>
+                    </span>
+                    <span v-else-if="memberTierStatus.nextTier" class="text-cyan-400">
+                      {{ memberTierStatus.remainingExpToNext }} EXP lagi menuju {{ memberTierStatus.nextTier.name }}
+                    </span>
+                    <span v-else class="text-purple-300">
+                      Semua 6 Tier Terbuka
+                    </span>
+                    <span>{{ memberTierStatus.totalExp }} EXP Total</span>
+                  </div>
+                </div>
+
+                <!-- Alert Khusus Jika Gacha Terkunci (< 10 EXP) -->
+                <div
+                  v-if="!memberTierStatus.isGachaUnlocked"
+                  class="p-3 rounded-xl bg-amber-950/30 border border-amber-500/40 text-[11px] font-mono text-amber-200 leading-relaxed flex items-start gap-2 animate-pulse"
+                >
+                  <i class="fas fa-triangle-exclamation text-amber-400 text-sm mt-0.5 flex-shrink-0"></i>
+                  <div>
+                    <strong class="text-amber-300 block mb-0.5">GACHA LEVEL 1 BELUM TERBUKA</strong>
+                    Kumpulkan minimal <strong>10 EXP</strong> untuk membuka Gacha Bronze. Setiap kehadiran meetup resmi XFIVE memberikan <strong>+3 EXP</strong> dan <strong>+1 Poin Gacha</strong>.
                   </div>
                 </div>
               </div>
@@ -325,10 +390,56 @@
         <div class="lg:col-span-6 space-y-6">
           <div class="rounded-3xl border border-cyan-500/40 bg-gradient-to-b from-[#0c1424] via-[#090d16] to-[#06080e] p-6 sm:p-8 backdrop-blur-xl shadow-[0_0_50px_rgba(0,255,255,0.15)] relative overflow-hidden flex flex-col items-center">
             
+            <!-- Tier Machine Selector Tabs (Mobile Responsive Horizontal Scroll) -->
+            <div class="w-full pb-3 border-b border-white/10 mb-3">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-orbitron font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fas fa-layer-group text-cyan-400"></i>
+                  <span>PILIH TINGKATAN TIER GACHA:</span>
+                </span>
+                <span class="text-[10px] font-mono text-gray-400 hidden sm:inline">
+                  Pool hadiah berbeda per level
+                </span>
+              </div>
+
+              <!-- Horizontal Tab List -->
+              <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar no-scrollbar py-1">
+                <button
+                  v-for="t in TIERS"
+                  :key="t.level"
+                  type="button"
+                  @click="handleSelectTier(t)"
+                  class="px-3 py-2 rounded-2xl border text-xs font-mono font-bold transition-all duration-200 flex-shrink-0 flex items-center gap-2 cursor-pointer shadow-sm"
+                  :class="[
+                    selectedTierLevel === t.level
+                      ? `${t.bgGradient} ${t.borderColor} text-white shadow-lg ring-1 ring-cyan-400/40 scale-102`
+                      : 'bg-black/50 border-white/10 text-gray-400 hover:text-white hover:bg-white/5',
+                    !isTierUnlocked(t.level) && 'opacity-60'
+                  ]"
+                >
+                  <span>{{ t.badge }}</span>
+                  <span
+                    class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase"
+                    :class="[
+                      isTierUnlocked(t.level)
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                        : 'bg-red-500/20 text-red-300 border border-red-500/40'
+                    ]"
+                  >
+                    {{ isTierUnlocked(t.level) ? 'Buka' : `${t.minExp} EXP` }}
+                  </span>
+                </button>
+              </div>
+            </div>
+
             <!-- Gacha Machine Top Marquee Header -->
-            <div class="w-full text-center pb-4 border-b border-cyan-500/20 mb-4">
-              <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-orbitron font-extrabold text-xs tracking-widest uppercase shadow-[0_0_15px_rgba(0,255,255,0.3)]">
-                 XFIVE GACHA POINT
+            <div class="w-full text-center pb-2 mb-2 flex items-center justify-center gap-2">
+              <span
+                class="px-3.5 py-1 rounded-full border font-orbitron font-extrabold text-xs tracking-widest uppercase transition-all duration-300"
+                :class="currentSelectedTier ? `${currentSelectedTier.borderColor} bg-black/60` : 'border-cyan-500/30 text-cyan-400'"
+                :style="{ color: currentSelectedTier?.color || '#00e5ff' }"
+              >
+                {{ currentSelectedTier?.badge }} GACHA POINT
               </span>
             </div>
 
@@ -399,6 +510,34 @@
                 </div>
                 <p class="text-[11px] font-mono text-gray-400">
                   Verifikasi Member Code &amp; Kode Rahasia akun Anda di panel kiri untuk membuka tombol roll.
+                </p>
+              </div>
+
+              <!-- Warning Banner jika Gacha Terkunci (< 10 EXP) -->
+              <div
+                v-else-if="!memberTierStatus.isGachaUnlocked"
+                class="p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-center space-y-1 animate-pulse"
+              >
+                <div class="text-xs font-orbitron font-bold text-amber-300 flex items-center justify-center gap-2">
+                  <i class="fas fa-lock text-amber-400"></i>
+                  <span>GACHA TIER 1 TERKUNCI (BUTUH 10 EXP)</span>
+                </div>
+                <p class="text-[11px] font-mono text-gray-300">
+                  Akun Anda saat ini memiliki <strong>{{ memberTierStatus.totalExp }} EXP</strong>. Hadiri Meetup untuk mendapatkan <strong>+3 EXP &amp; +1 Poin</strong>!
+                </p>
+              </div>
+
+              <!-- Warning Banner jika Tier yang Dipilih Belum Terbuka -->
+              <div
+                v-else-if="!isTierUnlocked(selectedTierLevel)"
+                class="p-3.5 rounded-2xl bg-purple-950/40 border border-purple-500/40 text-center space-y-1 animate-pulse"
+              >
+                <div class="text-xs font-orbitron font-bold text-purple-300 flex items-center justify-center gap-2">
+                  <i class="fas fa-lock text-purple-400"></i>
+                  <span>TIER {{ currentSelectedTier?.name.toUpperCase() }} BELUM TERBUKA</span>
+                </div>
+                <p class="text-[11px] font-mono text-gray-300">
+                  Tier ini membutuhkan minimal <strong>{{ currentSelectedTier?.minExp }} EXP</strong> (Kurang {{ Math.max(0, (currentSelectedTier?.minExp || 0) - memberTierStatus.totalExp) }} EXP lagi). Pilih tier yang sudah terbuka (misal: Bronze) untuk memutar gacha.
                 </p>
               </div>
 
@@ -486,6 +625,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useGacha } from '@/composables/useGacha';
 import { useToast } from '@/composables/useToast';
+import { getTierByLevel } from '@/utils/tiers';
 import RewardListModal from '@/components/gacha/RewardListModal.vue';
 import HowToPlayModal from '@/components/gacha/HowToPlayModal.vue';
 import GachaResultModal from '@/components/gacha/GachaResultModal.vue';
@@ -515,7 +655,27 @@ const {
   logoutMember,
   fetchMyHistory,
   rollGacha,
+  selectedTierLevel,
+  setSelectedTierLevel,
+  memberTierStatus,
+  TIERS,
 } = useGacha();
+
+const currentSelectedTier = computed(() => getTierByLevel(selectedTierLevel.value) || TIERS[0]);
+
+const isTierUnlocked = (level) => {
+  return memberTierStatus.value.unlockedLevels.includes(level);
+};
+
+const handleSelectTier = (t) => {
+  setSelectedTierLevel(t.level);
+  if (!isTierUnlocked(t.level)) {
+    toast.info(
+      `Tier ${t.name} terkunci (butuh ${t.minExp} EXP). Kamu bisa melihat daftar hadiahnya, namun butuh ${Math.max(0, t.minExp - memberTierStatus.value.totalExp)} EXP lagi untuk memutar mesin ini.`,
+      'Preview Mode Tier'
+    );
+  }
+};
 
 const showRewardListModal = ref(false);
 const showHowToPlayModal = ref(false);
@@ -555,6 +715,8 @@ const capsules = [
 
 const canRoll = (count) => {
   if (!isAuthenticated.value || !memberInfo.value) return false;
+  if (!memberTierStatus.value.isGachaUnlocked) return false;
+  if (!isTierUnlocked(selectedTierLevel.value)) return false;
   return memberInfo.value.available_points >= count * (eventSettings.value.points_per_roll || 1);
 };
 
@@ -563,7 +725,22 @@ const handleRoll = async (count) => {
     toast.warning('Silakan verifikasi Member Code & Kode Rahasia Anda terlebih dahulu pada panel kiri.', 'Verifikasi Diperlukan');
     return;
   }
-  await rollGacha(count);
+  if (!memberTierStatus.value.isGachaUnlocked) {
+    toast.warning(
+      `Gacha masih terkunci. Anda membutuhkan minimal 10 EXP untuk membuka Gacha Bronze (Kurang ${memberTierStatus.value.remainingExpToUnlock} EXP lagi).`,
+      'Gacha Terkunci'
+    );
+    return;
+  }
+  if (!isTierUnlocked(selectedTierLevel.value)) {
+    const t = getTierByLevel(selectedTierLevel.value);
+    toast.warning(
+      `Tingkatan Tier ${t?.name || selectedTierLevel.value} masih terkunci untuk akun Anda. Kumpulkan EXP lebih banyak dari Meetup!`,
+      'Tier Terkunci'
+    );
+    return;
+  }
+  await rollGacha(count, selectedTierLevel.value);
 };
 
 // Countdown Timer calculation

@@ -1,8 +1,10 @@
 import { ref, computed } from 'vue';
 import { useToast } from '@/composables/useToast';
+import { calculateMemberTier, MemberTierStatus, getTierByLevel, TIERS, TierItem } from '@/utils/tiers';
 
 export interface GachaPublicReward {
   id: number;
+  tier_level?: number;
   category: 'VIP' | 'MI-CASH' | 'OTHERS';
   vip_type?: string | null;
   name: string;
@@ -25,6 +27,18 @@ export interface GachaMemberInfo {
   total_hadir: number;
   total_spent: number;
   available_points: number;
+  total_exp?: number;
+  tier_level?: number;
+  tier_name?: string;
+  tier_badge?: string;
+  tier_color?: string;
+  is_gacha_unlocked?: boolean;
+  remaining_exp_to_unlock?: number;
+  remaining_exp_to_next?: number;
+  progress_percentage?: number;
+  unlocked_levels?: number[];
+  next_tier_name?: string | null;
+  next_tier_exp?: number | null;
 }
 
 export interface GachaRollResult {
@@ -98,6 +112,17 @@ export function useGacha() {
     typeof window !== 'undefined' ? localStorage.getItem('xfive_gacha_skip_anim') === 'true' : false
   );
 
+  const selectedTierLevel = ref<number>(1);
+
+  const memberTierStatus = computed<MemberTierStatus>(() => {
+    return calculateMemberTier(memberInfo.value?.total_exp || 0);
+  });
+
+  const setSelectedTierLevel = (lvl: number) => {
+    selectedTierLevel.value = lvl;
+    fetchRewards(lvl);
+  };
+
   const setSkipAnimation = (val: boolean) => {
     skipAnimation.value = val;
     if (typeof window !== 'undefined') {
@@ -121,11 +146,12 @@ export function useGacha() {
     }
   };
 
-  // 2. Fetch Rewards & Rates
-  const fetchRewards = async () => {
+  // 2. Fetch Rewards & Rates (Sesuai Tier Level)
+  const fetchRewards = async (tierLevelOverride?: number) => {
     loadingRewards.value = true;
     try {
-      const res = await fetch('/api/v1/gacha/rewards');
+      const lvl = tierLevelOverride !== undefined ? tierLevelOverride : (selectedTierLevel.value || 1);
+      const res = await fetch(`/api/v1/gacha/rewards?tier_level=${lvl}`);
       const data = await res.json();
       if (data.success && data.data) {
         rewards.value = data.data.rewards || [];
@@ -231,10 +257,31 @@ export function useGacha() {
     }
   };
 
-  // 6. Execute Gacha Roll (1x, 5x, 10x) - Protected by Session Token
-  const rollGacha = async (rollCount: 1 | 5 | 10) => {
+  // 6. Execute Gacha Roll (1x, 5x, 10x) - Protected by Session Token & Tier Level
+  const rollGacha = async (rollCount: 1 | 5 | 10, tierLevelOverride?: number) => {
     if (!isAuthenticated.value || !sessionToken.value || !memberInfo.value) {
       toast.warning('Silakan login dan verifikasi akun Anda terlebih dahulu.', 'Perlu Autentikasi');
+      return null;
+    }
+
+    const targetTier = tierLevelOverride || selectedTierLevel.value || 1;
+
+    // 1. Cek Syarat Pembuka Gacha (Minimal 10 EXP untuk Level 1 Bronze)
+    if (!memberTierStatus.value.isGachaUnlocked) {
+      toast.warning(
+        `Gacha masih terkunci. Anda membutuhkan minimal 10 EXP untuk membuka Gacha Bronze. Kumpulkan ${memberTierStatus.value.remainingExpToUnlock} EXP lagi melalui kehadiran Meetup!`,
+        'Gacha Terkunci'
+      );
+      return null;
+    }
+
+    // 2. Cek Apakah Tier Terpilih Sudah Ter-unlock
+    if (!memberTierStatus.value.unlockedLevels.includes(targetTier)) {
+      const tierData = getTierByLevel(targetTier);
+      toast.warning(
+        `Tingkatan Tier ${tierData?.name || targetTier} belum terbuka untuk akun Anda. Kumpulkan EXP lebih banyak untuk membuka tier ini!`,
+        'Tier Belum Terbuka'
+      );
       return null;
     }
 
@@ -254,6 +301,7 @@ export function useGacha() {
         },
         body: JSON.stringify({
           roll_count: rollCount,
+          tier_level: targetTier,
         }),
       });
 
@@ -312,6 +360,10 @@ export function useGacha() {
     eventSettings,
     myHistory,
     loadingHistory,
+    selectedTierLevel,
+    setSelectedTierLevel,
+    memberTierStatus,
+    TIERS,
     isRolling,
     rollResults,
     showResultModal,

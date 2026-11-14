@@ -60,7 +60,60 @@
     <!-- SUB-TAB 1: HADIAH & DROP RATE                                  -->
     <!-- ============================================================== -->
     <div v-if="activeSubTab === 'rewards'" class="space-y-6">
-      <!-- Summary Rate & ZONK Meter -->
+      <!-- Tier Filter Tabs Prominent Header -->
+      <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10 space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono px-1">
+          <span class="text-gray-300 font-bold flex items-center gap-1.5 uppercase font-orbitron text-[11px]">
+            <i class="fas fa-layer-group text-cyan-400"></i>
+            <span>Pilih Tingkatan Tier / Mesin Gacha:</span>
+          </span>
+          <span class="text-[11px] text-gray-400">
+            Kalkulasi Peluang &amp; ZONK dihitung spesifik per level
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar no-scrollbar py-1">
+          <button
+            type="button"
+            @click="selectedTierFilter = 'ALL'"
+            class="px-3.5 py-2 rounded-xl border text-xs font-mono whitespace-nowrap transition cursor-pointer flex items-center gap-2"
+            :class="selectedTierFilter === 'ALL' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 font-bold shadow-[0_0_10px_rgba(0,255,255,0.2)]' : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'"
+          >
+            <i class="fas fa-cubes"></i>
+            <span>Semua Tier</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-black/50 text-gray-300 font-bold">{{ rewardsList.length }}</span>
+          </button>
+
+          <button
+            v-for="t in TIERS"
+            :key="t.level"
+            type="button"
+            @click="selectedTierFilter = t.level"
+            class="px-3.5 py-2 rounded-xl border text-xs font-mono whitespace-nowrap transition cursor-pointer flex items-center gap-2"
+            :class="selectedTierFilter === t.level ? `${t.bgGradient} ${t.borderColor} text-white font-bold ring-1 ring-cyan-400/40 shadow-lg scale-102` : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'"
+          >
+            <span>{{ t.badge }}</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-black/50 text-white font-bold">
+              {{ rewardsList.filter((r) => (r.tier_level || 1) === t.level).length }} item
+            </span>
+            <span
+              v-if="getTierStats(t.level).count > 0"
+              class="text-[9px] px-1.5 py-0.2 rounded font-bold font-mono"
+              :class="selectedTierFilter === t.level ? 'bg-emerald-500/30 text-emerald-200' : 'bg-emerald-500/15 text-emerald-400'"
+            >
+              Win {{ getTierStats(t.level).winRate }}% / Zonk {{ getTierStats(t.level).zonkRate }}%
+            </span>
+            <span
+              v-else
+              class="text-[9px] px-1.5 py-0.2 rounded font-mono text-gray-500 bg-black/30"
+            >
+              Zonk 100%
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary Rate & ZONK Meter Per Tier -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- Card 1: Total Hadiah Aktif -->
         <div class="p-5 rounded-2xl bg-[#0c121e]/90 border border-cyan-500/20 backdrop-blur-md flex items-center gap-4">
@@ -68,9 +121,11 @@
             <i class="fas fa-box-open"></i>
           </div>
           <div>
-            <div class="text-[11px] font-mono text-gray-400 uppercase tracking-wider">Total Hadiah Terpasang</div>
+            <div class="text-[11px] font-mono text-gray-400 uppercase tracking-wider">
+              Total Hadiah ({{ selectedTierLabel }})
+            </div>
             <div class="text-2xl font-black font-orbitron text-white mt-0.5">
-              {{ rewardsList.length }} <span class="text-xs text-gray-400 font-mono font-normal">Item</span>
+              {{ filteredRewardsList.length }} <span class="text-xs text-gray-400 font-mono font-normal">Item</span>
             </div>
           </div>
         </div>
@@ -81,7 +136,9 @@
             <i class="fas fa-percent"></i>
           </div>
           <div>
-            <div class="text-[11px] font-mono text-gray-400 uppercase tracking-wider">Peluang Menang Hadiah</div>
+            <div class="text-[11px] font-mono text-gray-400 uppercase tracking-wider">
+              Peluang Menang ({{ selectedTierLabel }})
+            </div>
             <div class="text-2xl font-black font-orbitron text-emerald-400 mt-0.5">
               {{ totalRewardRate.toFixed(2) }}%
             </div>
@@ -94,7 +151,9 @@
             <i class="fas fa-bomb"></i>
           </div>
           <div>
-            <div class="text-[11px] font-mono text-gray-400 uppercase tracking-wider">Peluang ZONK Otomatis</div>
+            <div class="text-[11px] font-mono text-gray-400 uppercase tracking-wider">
+              Peluang ZONK ({{ selectedTierLabel }})
+            </div>
             <div class="text-2xl font-black font-orbitron text-red-400 mt-0.5">
               {{ zonkRate.toFixed(2) }}%
             </div>
@@ -137,10 +196,12 @@
         </button>
       </div>
 
-      <!-- Probability Gauge Bar -->
+      <!-- Probability Gauge Bar Per Tier -->
       <div class="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-2">
         <div class="flex items-center justify-between text-xs font-mono">
-          <span class="text-gray-300">Distribusi Probabilitas Gacha:</span>
+          <span class="text-gray-300">
+            Distribusi Probabilitas Mesin Gacha ({{ selectedTierLabel }}):
+          </span>
           <span class="text-gray-400">Total: <strong>100.00%</strong></span>
         </div>
         <div class="w-full h-3 bg-gray-800 rounded-full overflow-hidden flex shadow-inner">
@@ -167,13 +228,22 @@
         </div>
       </div>
 
-      <!-- Action Button & Rewards Table -->
-      <div class="flex items-center justify-between">
-        <h3 class="font-orbitron font-bold text-sm text-white uppercase tracking-wider">Daftar Hadiah Gacha</h3>
+      <!-- Table Header & Action Button -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <h3 class="font-orbitron font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+            <i class="fas fa-gift text-cyan-400"></i>
+            <span>Daftar Hadiah: {{ selectedTierLabel }}</span>
+          </h3>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+            {{ filteredRewardsList.length }} Item
+          </span>
+        </div>
+
         <button
           type="button"
           @click="openAddRewardModal"
-          class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-orbitron font-bold text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,255,255,0.3)] transition-all flex items-center gap-2 cursor-pointer"
+          class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-orbitron font-bold text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,255,255,0.3)] transition-all flex items-center justify-center gap-2 cursor-pointer flex-shrink-0"
         >
           <i class="fas fa-plus"></i>
           <span>Tambah Hadiah</span>
@@ -185,6 +255,7 @@
           <table class="w-full text-left text-xs font-mono">
             <thead class="bg-black/60 text-gray-400 uppercase tracking-wider text-[11px] border-b border-white/10">
               <tr>
+                <th class="p-3.5">Tier Level</th>
                 <th class="p-3.5">Kategori</th>
                 <th class="p-3.5">Nama Hadiah</th>
                 <th class="p-3.5">Drop Rate (%)</th>
@@ -195,7 +266,15 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5 text-gray-200">
-              <tr v-for="reward in rewardsList" :key="reward.id" class="hover:bg-white/5 transition-colors">
+              <tr v-for="reward in filteredRewardsList" :key="reward.id" class="hover:bg-white/5 transition-colors">
+                <td class="p-3.5">
+                  <span
+                    class="px-2 py-0.5 rounded-lg text-[10px] font-bold font-mono border"
+                    :style="{ color: getTierColor(reward.tier_level), borderColor: `${getTierColor(reward.tier_level)}50`, backgroundColor: `${getTierColor(reward.tier_level)}15` }"
+                  >
+                    {{ getTierBadge(reward.tier_level) }}
+                  </span>
+                </td>
                 <td class="p-3.5">
                   <span
                     class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider font-orbitron uppercase border"
@@ -861,6 +940,27 @@
             />
           </div>
 
+          <!-- Tingkat Tier Hadiah (Level 1 Bronze s.d. Level 6 XFIVE Legend) -->
+          <div>
+            <label class="block text-xs font-orbitron uppercase text-gray-300 font-bold mb-1">
+              Tingkat Tier Hadiah Gacha
+            </label>
+            <select
+              v-model="formReward.tier_level"
+              class="w-full bg-black/50 border border-white/10 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono outline-none"
+            >
+              <option :value="1">Level 1 - Bronze (Min 10 EXP)</option>
+              <option :value="2">Level 2 - Silver (Min 21 EXP)</option>
+              <option :value="3">Level 3 - Gold (Min 50 EXP)</option>
+              <option :value="4">Level 4 - Platinum (Min 115 EXP)</option>
+              <option :value="5">Level 5 - Diamond (Min 200 EXP)</option>
+              <option :value="6">Level 6 - XFIVE Legend (Min 3000 EXP)</option>
+            </select>
+            <div class="text-[10px] text-gray-400 font-mono mt-1">
+              Hadiah ini hanya akan muncul dan dapat diputar pada mesin gacha level yang dipilih.
+            </div>
+          </div>
+
           <!-- Jika VIP: Pilihan Subkategori VIP -->
           <div v-if="formReward.category === 'VIP'">
             <label class="block text-xs font-orbitron uppercase text-gray-300 font-bold mb-1">Subkategori VIP</label>
@@ -1058,17 +1158,21 @@ import { compressBannerImage } from '@/utils/imageCompressor';
 import { adminApi } from '@/utils/admin/adminApi';
 import { useToast } from '@/composables/useToast';
 import { useConfirm } from '@/composables/useConfirm';
+import { TIERS, getTierByLevel } from '@/utils/tiers';
 
 const toast = useToast();
 const { confirm: confirmModal } = useConfirm();
 
 const {
   rewardsList,
+  filteredRewardsList,
+  selectedTierFilter,
   vouchersList,
   rollsHistory,
   settings,
   totalRewardRate,
   zonkRate,
+  getTierStats,
   fetchRewards,
   saveReward,
   deleteReward,
@@ -1080,6 +1184,22 @@ const {
   fetchSettings,
   saveSettings,
 } = useAdminGacha();
+
+const selectedTierLabel = computed(() => {
+  if (selectedTierFilter.value === 'ALL') return 'Semua Level';
+  const t = getTierByLevel(selectedTierFilter.value);
+  return t ? t.badge : `Tier ${selectedTierFilter.value}`;
+});
+
+const getTierColor = (lvl) => {
+  const t = getTierByLevel(lvl || 1);
+  return t ? t.color : '#a855f7';
+};
+
+const getTierBadge = (lvl) => {
+  const t = getTierByLevel(lvl || 1);
+  return t ? t.badge : `Tier ${lvl}`;
+};
 
 const activeSubTab = ref('rewards');
 const isRefreshing = ref(false);
@@ -1146,6 +1266,7 @@ const rewardVoucherInputRef = ref(null);
 const formReward = reactive({
   category: 'VIP',
   vip_type: 'vip 72k',
+  tier_level: 1,
   name: '',
   description: '',
   drop_rate: 5,
@@ -1171,6 +1292,7 @@ const openAddRewardModal = () => {
   editingRewardId.value = null;
   formReward.category = 'VIP';
   formReward.vip_type = 'vip 72k';
+  formReward.tier_level = selectedTierFilter.value !== 'ALL' ? Number(selectedTierFilter.value) : 1;
   formReward.name = 'VIP 72k (30 Hari)';
   formReward.description = '';
   formReward.drop_rate = 5;
@@ -1191,6 +1313,7 @@ const openEditRewardModal = (reward) => {
   editingRewardId.value = reward.id;
   formReward.category = reward.category;
   formReward.vip_type = reward.vip_type || 'vip 72k';
+  formReward.tier_level = Number(reward.tier_level) || 1;
   formReward.name = reward.name;
   formReward.description = reward.description || '';
   formReward.drop_rate = reward.drop_rate;
@@ -1243,6 +1366,7 @@ const handleSaveReward = async () => {
   try {
     const payload = {
       ...formReward,
+      tier_level: Number(formReward.tier_level) || 1,
       voucher: voucherPayload,
     };
     await saveReward(payload, editingRewardId.value);

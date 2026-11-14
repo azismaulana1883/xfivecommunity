@@ -3,6 +3,7 @@ import { adminClient } from '@/utils/admin/adminApi';
 
 export interface GachaRewardItem {
   id: number;
+  tier_level?: number;
   category: 'VIP' | 'MI-CASH' | 'OTHERS';
   vip_type?: string | null;
   name: string;
@@ -82,8 +83,38 @@ export function useAdminGacha() {
   const loadingRolls = ref(false);
   const loadingSettings = ref(false);
 
-  const totalRewardRate = ref(0);
-  const zonkRate = ref(100);
+  const selectedTierFilter = ref<number | 'ALL'>('ALL');
+
+  const filteredRewardsList = computed(() => {
+    if (selectedTierFilter.value === 'ALL') {
+      return rewardsList.value;
+    }
+    return rewardsList.value.filter((r) => (r.tier_level || 1) === selectedTierFilter.value);
+  });
+
+  // Peluang Menang & ZONK dihitung khusus untuk tier yang sedang aktif dipilih
+  const totalRewardRate = computed(() => {
+    const list = filteredRewardsList.value.filter((r) => r.is_active);
+    const sum = list.reduce((acc, r) => acc + (parseFloat(String(r.drop_rate)) || 0), 0);
+    return Math.min(100, parseFloat(sum.toFixed(2)));
+  });
+
+  const zonkRate = computed(() => {
+    return Math.max(0, parseFloat((100 - totalRewardRate.value).toFixed(2)));
+  });
+
+  // Helper untuk membaca statistik drop rate & zonk spesifik per tier level
+  const getTierStats = (tierLvl: number) => {
+    const list = rewardsList.value.filter((r) => (r.tier_level || 1) === tierLvl && r.is_active);
+    const sum = list.reduce((acc, r) => acc + (parseFloat(String(r.drop_rate)) || 0), 0);
+    const winRate = Math.min(100, parseFloat(sum.toFixed(2)));
+    const zonk = Math.max(0, parseFloat((100 - winRate).toFixed(2)));
+    return {
+      count: list.length,
+      winRate,
+      zonkRate: zonk,
+    };
+  };
 
   // 1. REWARDS CRUD
   const fetchRewards = async () => {
@@ -92,8 +123,6 @@ export function useAdminGacha() {
       const res = await adminClient.get('/api/v1/admin/gacha/rewards');
       if (res.data?.success) {
         rewardsList.value = res.data.data.rewards || [];
-        totalRewardRate.value = res.data.data.total_reward_rate || 0;
-        zonkRate.value = res.data.data.zonk_rate || 100;
       }
     } catch (err) {
       console.error('Failed to fetch gacha rewards:', err);
@@ -217,6 +246,8 @@ export function useAdminGacha() {
 
   return {
     rewardsList,
+    filteredRewardsList,
+    selectedTierFilter,
     vouchersList,
     rollsHistory,
     settings,
@@ -226,6 +257,7 @@ export function useAdminGacha() {
     loadingSettings,
     totalRewardRate,
     zonkRate,
+    getTierStats,
     fetchRewards,
     saveReward,
     deleteReward,

@@ -22,6 +22,12 @@ export interface MeetupItem {
   total_izin?: number;
   banner_image?: string | null;
   created_at?: string;
+  has_exp_up?: boolean;
+  exp_multiplier?: number;
+  exp_up_status?: 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED';
+  exp_up_note?: string;
+  exp_up_approved_by?: string;
+  exp_up_approved_at?: string;
 }
 
 export interface MeetupAttendanceItem {
@@ -34,6 +40,7 @@ export interface MeetupAttendanceItem {
   is_home_region: number;
   status: 'HADIR' | 'TIDAK_HADIR' | 'IZIN';
   points_delta: number;
+  exp_delta?: number;
   keterangan?: string;
   checkin_latitude?: number;
   checkin_longitude?: number;
@@ -72,6 +79,9 @@ export function useAdminMeetups() {
     longitude: number;
     radius_meters: number;
     description?: string;
+    has_exp_up?: boolean;
+    exp_multiplier?: number;
+    exp_up_note?: string;
   }) => {
     try {
       const res = await adminApi.post('/api/v1/meetups', payload);
@@ -85,6 +95,40 @@ export function useAdminMeetups() {
       return {
         success: false,
         message: err.response?.data?.message || 'Terjadi kesalahan saat membuat meetup.'
+      };
+    }
+  };
+
+  const approveExpUp = async (id: number) => {
+    try {
+      const res = await adminApi.post(`/api/v1/admin/meetups/${id}/exp-up`, { action: 'APPROVE' });
+      if (res.data?.success) {
+        await fetchMeetups();
+        notifyDataChanged('meetups');
+        return { success: true, message: res.data?.message };
+      }
+      return { success: false, message: res.data?.message || 'Gagal menyetujui EXP UP.' };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err.response?.data?.message || 'Gagal menyetujui EXP UP.'
+      };
+    }
+  };
+
+  const rejectExpUp = async (id: number) => {
+    try {
+      const res = await adminApi.post(`/api/v1/admin/meetups/${id}/exp-up`, { action: 'REJECT' });
+      if (res.data?.success) {
+        await fetchMeetups();
+        notifyDataChanged('meetups');
+        return { success: true, message: res.data?.message };
+      }
+      return { success: false, message: res.data?.message || 'Gagal menolak EXP UP.' };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err.response?.data?.message || 'Gagal menolak EXP UP.'
       };
     }
   };
@@ -175,6 +219,8 @@ export function useAdminMeetups() {
     loadingMeetups,
     fetchMeetups,
     saveMeetup,
+    approveExpUp,
+    rejectExpUp,
     finalizeMeetup,
     deleteMeetup,
     fetchAttendances,

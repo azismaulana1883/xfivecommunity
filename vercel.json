@@ -2,75 +2,75 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "https://yuukaa.my.id/api/:match*"
+      "destination": "https://api.yuukaa.my.id/api/:match*"
     },
     {
       "source": "/uploads/:match*",
-      "destination": "https://yuukaa.my.id/uploads/:match*"
+      "destination": "https://api.yuukaa.my.id/uploads/:match*"
     },
     {
       "source": "/sitemap-articles.xml",
-      "destination": "https://yuukaa.my.id/sitemap-articles.xml"
+      "destination": "https://api.yuukaa.my.id/sitemap-articles.xml"
     },
     {
       "source": "/.netlify/functions/get-members",
-      "destination": "https://yuukaa.my.id/api/v1/members"
+      "destination": "https://api.yuukaa.my.id/api/v1/members"
     },
     {
       "source": "/.netlify/functions/login",
-      "destination": "https://yuukaa.my.id/api/v1/auth/login"
+      "destination": "https://api.yuukaa.my.id/api/v1/auth/login"
     },
     {
       "source": "/.netlify/functions/logout",
-      "destination": "https://yuukaa.my.id/api/v1/auth/logout"
+      "destination": "https://api.yuukaa.my.id/api/v1/auth/logout"
     },
     {
       "source": "/.netlify/functions/verify-session",
-      "destination": "https://yuukaa.my.id/api/v1/auth/verify"
+      "destination": "https://api.yuukaa.my.id/api/v1/auth/verify"
     },
     {
       "source": "/.netlify/functions/verify",
-      "destination": "https://yuukaa.my.id/api/v1/auth/verify"
+      "destination": "https://api.yuukaa.my.id/api/v1/auth/verify"
     },
     {
       "source": "/.netlify/functions/get-blacklist",
-      "destination": "https://yuukaa.my.id/api/v1/blacklist"
+      "destination": "https://api.yuukaa.my.id/api/v1/blacklist"
     },
     {
       "source": "/.netlify/functions/get-faq",
-      "destination": "https://yuukaa.my.id/api/v1/faqs"
+      "destination": "https://api.yuukaa.my.id/api/v1/faqs"
     },
     {
       "source": "/.netlify/functions/get-motm",
-      "destination": "https://yuukaa.my.id/api/v1/motm"
+      "destination": "https://api.yuukaa.my.id/api/v1/motm"
     },
     {
       "source": "/.netlify/functions/get-gallery",
-      "destination": "https://yuukaa.my.id/api/v1/gallery"
+      "destination": "https://api.yuukaa.my.id/api/v1/gallery"
     },
     {
       "source": "/.netlify/functions/submit-registration",
-      "destination": "https://yuukaa.my.id/api/v1/registrations"
+      "destination": "https://api.yuukaa.my.id/api/v1/registrations"
     },
     {
       "source": "/.netlify/functions/get-captcha",
-      "destination": "https://yuukaa.my.id/api/v1/captcha"
+      "destination": "https://api.yuukaa.my.id/api/v1/captcha"
     },
     {
       "source": "/.netlify/functions/verify-captcha",
-      "destination": "https://yuukaa.my.id/api/v1/captcha/verify"
+      "destination": "https://api.yuukaa.my.id/api/v1/captcha/verify"
     },
     {
       "source": "/.netlify/functions/verify-social",
-      "destination": "https://yuukaa.my.id/api/v1/social/verify"
+      "destination": "https://api.yuukaa.my.id/api/v1/social/verify"
     },
     {
       "source": "/.netlify/functions/verify-biometric",
-      "destination": "https://yuukaa.my.id/api/v1/biometric/verify"
+      "destination": "https://api.yuukaa.my.id/api/v1/biometric/verify"
     },
     {
       "source": "/.netlify/functions/upload-biometric",
-      "destination": "https://yuukaa.my.id/api/v1/biometric/upload"
+      "destination": "https://api.yuukaa.my.id/api/v1/biometric/upload"
     },
     {
       "source": "/(.*)",
